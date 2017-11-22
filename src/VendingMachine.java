@@ -3,9 +3,6 @@ import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
-/**
- * 
- */
 
 /**
  * @author Robert Smithers and Devin Roychowdhury
@@ -20,19 +17,26 @@ public class VendingMachine {
 	/**
 	 * @param args
 	 */
-	final String accFile = "accountDetails";
-	File acc;
-	Scanner accReader;
-	Scanner input = new Scanner(System.in);
+	final private String accFile = "accountDetails.txt";
+	//private File acc;
+	private Scanner accReader;
+	private Scanner input = new Scanner(System.in);
+	private PrintWriter acc;
+	
 	public VendingMachine()
 	{
-		acc = new File("accountDetails");
+		File file = new File("accountDetails.txt");
+		
 		try {
-			accReader = new Scanner(acc);
+			//accReader = new Scanner(acc);
 			//FileWriter accWriter = new FileWriter(accFile);
 			//PrintWriter print_line = new PrintWriter(accWriter);
-			//print_line.printf("%s"+"%n", "Testing write to a file");
-			//print_line.close();
+			//acc2.printf("%s"+"%n", "Testing write to a file");
+			if(!file.exists() && !file.isDirectory()) { 
+				acc = new PrintWriter(accFile);
+				acc.printf("%8s%15s\n", "Username", "Password", "");
+				acc.close();
+			}
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -46,7 +50,7 @@ public class VendingMachine {
 		System.out.println("Welcome to the our Vending Machine program\nVersion number "+null);
 		while (!decision.toLowerCase().equals("exit") && !decision.toLowerCase().equals("create") && !isValidAccount(username, password))
 		{
-			System.out.print("\nUsername: ");
+			System.out.print("Username: ");
 			username = input.next();
 			System.out.print("Password: ");
 			password = input.next();
@@ -71,14 +75,16 @@ public class VendingMachine {
 	}
 	
 	public void createAccount() {
-		System.out.println("Please input your new username: ");
+		System.out.println("\nPlease input your new username: ");
 		String newUsername = input.next();
 		System.out.println("Please input your new password: ");
 		String newPassword = input.next();
+		acc.printf("%10s%15s", newUsername, newPassword);
+		acc.close();
 	}
 	
 	public boolean isValidAccount(String username, String password) {
-		return true;
+		return false;
 	}
 	
 	public int getChoice() {
@@ -88,7 +94,7 @@ public class VendingMachine {
 	}
 	
 	public static void main(String[] args) {
-		VendingMachine first = new VendingMachine();
+		VendingMachine first = new VendingMachine();		//Initialized + logon
 		if (first.intro()) {
 			first.getChoice();
 		}
