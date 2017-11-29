@@ -1,5 +1,9 @@
 import java.util.InputMismatchException;
+
 import java.util.Scanner;
+
+import net.codejava.crypto.CryptoException;
+import net.codejava.crypto.CryptoUtils;
 
 import java.io.FileWriter;
 import java.io.PrintWriter;
@@ -24,7 +28,12 @@ public class VendingMachine {
 	 * @param args
 	 */
 	final private String accFile = "accountDetails.txt";
+	final private String key = "b2Hs0AkwpVme@duW";			//Used for the AES
 	final private File file = new File("accountDetails.txt");
+	final private File inputFile = new File(accFile);
+	final private File encryptedFile = new File("accountDetails.encrypted");
+	final private File decryptedFile = new File("accountDetails.decrypted");
+	//final private File decryptedFile = new File("accountDetails.decrypted");
 	private Scanner input = new Scanner(System.in);
 	private PrintWriter acc;
 
@@ -35,16 +44,34 @@ public class VendingMachine {
 	public VendingMachine()
 	{
 		try {
+			
+			//Make accountDetails.txt
 			if(!file.exists() && !file.isDirectory()) { 
 				acc = new PrintWriter(accFile);			//Creates a printwriter with a blank file, only creating the username and password rows
 				acc.printf("%8s%25s\n", "Username", "Password", "");
 				acc.close();
+
+				//Encrypts the file after modification
+				try {
+					CryptoUtils.encrypt(key, file, encryptedFile);
+					CryptoUtils.decrypt(key, encryptedFile, decryptedFile);
+				} catch (CryptoException ex) {
+					System.out.println(ex.getMessage());
+					ex.printStackTrace();
+				}
 			}
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
+
+
+
+
+
+
+
 	}
-	
+
 	/**
 	 * Gives the user a UI and handles all account creation and login attempts
 	 * @return whether or not the program should continue based on the validity/permissions of the account entered
@@ -54,7 +81,7 @@ public class VendingMachine {
 		String decision= "login";
 		String username = " ";
 		String password = " ";
-		System.out.println("Welcome to the our Vending Machine program\nVersion number 1.0");
+		System.out.println("Welcome to our Vending Machine program\nVersion number 1.0");
 		while (!decision.toLowerCase().equals("exit") && !decision.toLowerCase().equals("create") && !isValidAccount(username, password))
 		{
 			if (decision.toLowerCase().equals("login")) {
@@ -82,9 +109,9 @@ public class VendingMachine {
 			return true;
 		}
 		else throw new RuntimeException("Sorry, but something went wrong. Oops");
-		
+
 	}
-	
+
 	/**
 	 * Creates a brand new account and puts the username and password into the accountDetails text file
 	 */
@@ -93,19 +120,30 @@ public class VendingMachine {
 		String newUsername = input.next();
 		System.out.println("Please input your new password: ");
 		String newPassword = input.next();
-		
+
 		try {
 			FileWriter account = new FileWriter(accFile, true);		//Second parameter signals appending, not creating
 			PrintWriter accInfo = new PrintWriter(account);
+
+			//Decrypt before modification of the file
+			CryptoUtils.decrypt(key, encryptedFile, decryptedFile);
+
 			accInfo.printf("%-15s%18s\n", newUsername, newPassword, "");
 			accInfo.close();
+
+			//Encrypt again after modification
+			//CryptoUtils.encrypt(key, inputFile, file);
+
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (CryptoException ex) {
+			System.out.println(ex.getMessage());
+			ex.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Determines the validity of the account based on its permissions and existence.
 	 * @param username The inputted username from the user
@@ -115,28 +153,57 @@ public class VendingMachine {
 	public boolean isValidAccount(String username, String password) {
 		try
 		{
+			//Decrypting before pulling data
+			try {
+
+				//CryptoUtils.encrypt(key, inputFile, encryptedFile);
+				CryptoUtils.decrypt(key, encryptedFile, decryptedFile);
+			} catch (CryptoException ex) {
+				System.out.println(ex.getMessage());
+				ex.printStackTrace();
+			}
 			BufferedReader reader = new BufferedReader(new FileReader(accFile));
-			String line;
-			while ((line = reader.readLine()) != null)
+			String line; String[] text;
+			while ((line = reader.readLine()) != null && (text = line.split(" ")).length > 18)			//18 is the length of having the username and password strings
 			{
-				String[] text = line.split(" ");
+				text = line.split(" ");
+				System.out.println(text.length);
 				for (int i=0; i<text.length; i++) {					//1 and 2 is the Username: "Username" and Password: "Password" which would create a security vulnerability to leave unattended
 					while (text[i].equals("") && i<text.length) {
 						i++;
 					}
 					String goodUser = text[i];
-					i++;
+					try {
+						i++;
+						if (text[i] == null) i--;
+					} catch (ArrayIndexOutOfBoundsException e) {
+						continue;
+					}
 					while (text[i].equals("") && i<text.length) {
 						i++;
 					}
 					String goodPass = text[i];
 					if (username.equals(goodUser) && password.equals(goodPass)) {
 						reader.close();
+						try {
+							CryptoUtils.encrypt(key, decryptedFile, file);
+							//CryptoUtils.decrypt(key, encryptedFile, decryptedFile);
+						} catch (CryptoException ex) {
+							System.out.println(ex.getMessage());
+							ex.printStackTrace();
+						}
 						return true;
 					}
 				}
 			}
 			reader.close();
+			try {
+				CryptoUtils.encrypt(key, inputFile, encryptedFile);
+				//CryptoUtils.decrypt(key, encryptedFile, decryptedFile);
+			} catch (CryptoException ex) {
+				System.out.println(ex.getMessage());
+				ex.printStackTrace();
+			}
 			return false;
 		}
 		catch (Exception e)
@@ -146,7 +213,7 @@ public class VendingMachine {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Gets what the user wants to do with the vending machine.
 	 * @return 1, 2, or 3 based on the user's input. May also be view, modify, or exit
