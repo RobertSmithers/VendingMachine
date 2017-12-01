@@ -25,7 +25,7 @@ public class CryptoUtils {
  
     public static void encrypt(String key, File inputFile, File outputFile)
             throws CryptoException {
-        doCrypto(Cipher.ENCRYPT_MODE, key, inputFile, outputFile);
+    	doCrypto(Cipher.ENCRYPT_MODE, key, inputFile, outputFile);
     }
  
     public static void decrypt(String key, File inputFile, File outputFile)
