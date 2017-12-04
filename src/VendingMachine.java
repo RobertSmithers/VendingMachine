@@ -277,7 +277,7 @@ public class VendingMachine {
 		boolean searching = true;
 		while (searching) {
 			System.out.println("Select the correct category:\n1) Snack\n2) Drink\n3) Go back");
-			String choice = input.next();
+			String choice = input.nextLine();
 			if (choice.equals("1")) {
 				for (Snack s : snacks) {
 		
@@ -310,34 +310,44 @@ public class VendingMachine {
 	private void modifyInventory() {
 		System.out.println("What would you like to change? You may:\n1) Update Product Name\n2) Update Product Quantity\n3) Update Product Cost\n4) Update Product Sale Price\n5) Go back");
 		String choice = input.next();
-		String choice2;
+		String choice2 = "5";
 		boolean choose = true;
-		while (choose)
-			if (choice.equals("1")) {
+		while (choose) {
+			
+			if (choice.equals("1") || choice.equals("2") || choice.equals("3")) {
 				System.out.println("Which item would you like to change (enter exact name and spelling of item)");
 				choice2 = input.next();
+			}
+			if (choice.equals("1")) {
 				//Look up item in chart
-				if (lookupItem(choice2) != null) {			//Returns an array with the name, cost, price, and stock #
-					System.out.println("User did not cancel search");
+				ArrayList<String> a = lookupItem(choice2);
+				if (a != null) {			//Returns an array with the name, cost, price, and stock #
+					System.out.println("Please enter the new name of the item");
+					String choice3 = input.nextLine();
+					System.out.println();
 				}
 				
 				choose = false;
 			}
 			else if (choice.equals("2")) {
 				if (lookupItem(choice2) != null) {			//Returns an array with the name, cost, price, and stock #
-					System.out.println("User did not cancel search");
+					System.out.println("Please enter the new cost");
+					String choice3 = input.next();
+					
 				}
 				choose = false;
 			}
 			else if (choice.equals("3")) {
 				if (lookupItem(choice2) != null) {			//Returns an array with the name, cost, price, and stock #
-					System.out.println("User did not cancel search");
+					System.out.println("Please enter the new sale price");
+					String choice3 = input.next();
 				}
 				choose = false;
 			}
 			else if (choice.equals("4")) {
 				if (lookupItem(choice2) != null) {			//Returns an array with the name, cost, price, and stock #
-					System.out.println("User did not cancel search");
+					System.out.println("Please enter the new inventory quantity");
+					String choice3 = input.next();
 				}
 				choose = false;
 			}
@@ -345,6 +355,7 @@ public class VendingMachine {
 				choose = false;
 			}
 			else System.out.println("Please enter a valid number from 1 to 5.");
+		}
 	}
 	
 	/**
