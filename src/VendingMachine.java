@@ -2,8 +2,8 @@ import java.util.InputMismatchException;
 
 import java.util.Scanner;
 
-import net.codejava.crypto.CryptoException;
-import net.codejava.crypto.CryptoUtils;
+import crypto.CryptoException;
+import crypto.CryptoUtils;
 
 import java.io.FileWriter;
 import java.io.PrintWriter;
@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * @author Robert Smithers and Devin Roychowdhury
+ * @author Robert Smithers and Deven Roychowdhury
  * @date 11/16/17
  * @description Creates a detailed collection of information and statistics on a vending
  * machine using the snacks built into the code and the purchases
@@ -277,7 +277,7 @@ public class VendingMachine {
 		boolean searching = true;
 		while (searching) {
 			System.out.println("Select the correct category:\n1) Snack\n2) Drink\n3) Go back");
-			String choice = input.nextLine();
+			String choice = input.next();
 			if (choice.equals("1")) {
 				for (Snack s : snacks) {
 		
@@ -323,8 +323,8 @@ public class VendingMachine {
 				ArrayList<String> a = lookupItem(choice2);
 				if (a != null) {			//Returns an array with the name, cost, price, and stock #
 					System.out.println("Please enter the new name of the item");
-					String choice3 = input.nextLine();
-					System.out.println();
+					String choice3 = input.next();
+					changeInventory(choice2, choice3, -1, -1, -1);
 				}
 				
 				choose = false;
@@ -332,7 +332,8 @@ public class VendingMachine {
 			else if (choice.equals("2")) {
 				if (lookupItem(choice2) != null) {			//Returns an array with the name, cost, price, and stock #
 					System.out.println("Please enter the new cost");
-					String choice3 = input.next();
+					Double choice3 = input.nextDouble();
+					changeInventory(choice2, null, -1, -1, choice3);
 					
 				}
 				choose = false;
@@ -340,14 +341,17 @@ public class VendingMachine {
 			else if (choice.equals("3")) {
 				if (lookupItem(choice2) != null) {			//Returns an array with the name, cost, price, and stock #
 					System.out.println("Please enter the new sale price");
-					String choice3 = input.next();
+					Double choice3 = input.nextDouble();
+					changeInventory(choice2, null, -1, choice3, -1);
 				}
 				choose = false;
 			}
 			else if (choice.equals("4")) {
 				if (lookupItem(choice2) != null) {			//Returns an array with the name, cost, price, and stock #
 					System.out.println("Please enter the new inventory quantity");
-					String choice3 = input.next();
+					int choice3 = input.nextInt();
+					changeInventory(choice2, null, choice3, -1, -1);
+					
 				}
 				choose = false;
 			}
@@ -356,6 +360,55 @@ public class VendingMachine {
 			}
 			else System.out.println("Please enter a valid number from 1 to 5.");
 		}
+	}
+	
+	/**
+	 * Changes the inventory for the given snack and if a parameter is -1 or null then it will keep it the same.
+	 */
+	private void changeInventory(String originalName, String newName, int inv, double price, double cost) {
+		Snack s = new Snack(-1, -1, -1, "");
+		boolean isSnack = false; 
+		
+		for (Snack snack : snacks) //Checks if the item is a snack
+			if (snack.getID().equals(originalName)) {
+				s = snack;
+				isSnack = true;
+			}
+		
+		for (Snack snack : drinks)//Checks if the item is a drink
+			if (snack.getID().equals(originalName))
+				s = snack;
+		
+		if (newName != null) { // Changes name
+			Snack newSnack = new Snack(s.getInventory(), s.getPrice(), s.getCost(), newName);
+			
+			if (isSnack) {
+				snacks.remove(s);
+				snacks.add(newSnack);
+			}
+			else {
+				drinks.remove(s);
+				snacks.add(newSnack);
+			}
+			
+			System.out.printf("%30s%30s%30s%30s\n",newSnack.getID(),Double.toString(newSnack.getCost()),Double.toString(newSnack.getPrice()),Integer.toString(newSnack.getInventory()));
+		}
+		
+		if (inv != -1) {
+			s.setInventory(inv);
+			System.out.printf("%30s%30s%30s%30s\n",s.getID(),Double.toString(s.getCost()),Double.toString(s.getPrice()),Integer.toString(s.getInventory()));
+		}
+		
+		if (price != -1) {
+			s.setPrice(price);
+			System.out.printf("%30s%30s%30s%30s\n",s.getID(),Double.toString(s.getCost()),Double.toString(s.getPrice()),Integer.toString(s.getInventory()));
+		}
+		
+		if (cost != -1) {
+			s.setCost(cost);
+			System.out.printf("%30s%30s%30s%30s\n",s.getID(),Double.toString(s.getCost()),Double.toString(s.getPrice()),Integer.toString(s.getInventory()));
+		}
+			
 	}
 	
 	/**
