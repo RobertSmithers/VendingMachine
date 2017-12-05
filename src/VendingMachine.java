@@ -140,12 +140,12 @@ public class VendingMachine {
 	 */
 	public String getChoice() {
 		String choice = "0";
-		while (!choice.equals("1") && !choice.toLowerCase().equals("view") && !choice.toLowerCase().equals("modify") && !choice.toLowerCase().equals("exit") && !choice.equals("2") && !choice.equals("3")) {
-			System.out.println("\nWould you like to 1) view your inventory, 2) modify your inventory, or 3) exit");
+		while (!choice.equals("1") && !choice.toLowerCase().equals("view") && !choice.toLowerCase().equals("modify") && !choice.toLowerCase().equals("exit") && !choice.equals("2") && !choice.equals("3") && !choice.equals("4") && !choice.toLowerCase().equals("buy")) {
+			System.out.println("\nWould you like to 1) view your inventory, 2) modify your inventory, 3) buy something, or 4) exit");
 			try {
 				choice = input.next().toLowerCase();
 			} catch (InputMismatchException e){
-				System.out.println("I'm sorry, but what you entered was not a number from 1-3");
+				System.out.println("I'm sorry, but what you entered was not a number from 1-4");
 			}
 		}
 		return choice;
@@ -285,14 +285,14 @@ public class VendingMachine {
 						matches.add(Double.toString(s.getCost()));
 						matches.add(Double.toString(s.getPrice()));
 						matches.add(Integer.toString(s.getInventory()));
-						System.out.printf("%30s%30s%30s%30s\n",s.getID(),Double.toString(s.getCost()),Double.toString(s.getPrice()),Integer.toString(s.getInventory()));
+						System.out.printf("%1s%30s%30s%30s\n",s.getID(),Double.toString(s.getCost()),Double.toString(s.getPrice()),Integer.toString(s.getInventory()));
 						searching=false;
 					}
 				}
 			}
 			else if (choice.equals("2")) {
 				for (Snack s : drinks) {
-					System.out.printf("%30s%30s%30s%30s\n",s.getID(),Double.toString(s.getCost()),Double.toString(s.getPrice()),Integer.toString(s.getInventory()));
+					System.out.printf("%1s%30s%30s%30s\n",s.getID(),Double.toString(s.getCost()),Double.toString(s.getPrice()),Integer.toString(s.getInventory()));
 					if (name.equals(s.getID())) {		//Add vals to the arrayList
 						matches.add(Double.toString(s.getCost()));
 						matches.add(Double.toString(s.getPrice()));
@@ -312,50 +312,58 @@ public class VendingMachine {
 		String choice = input.next();
 		String choice2 = "5";
 		boolean choose = true;
+		ArrayList<String> a = new ArrayList<String>();
 		while (choose) {
 			
 			if (choice.equals("1") || choice.equals("2") || choice.equals("3")) {
 				System.out.println("Which item would you like to change (enter exact name and spelling of item)");
 				choice2 = input.next();
+				 a = lookupItem(choice2);
+				
 			}
 			if (choice.equals("1")) {
 				//Look up item in chart
-				ArrayList<String> a = lookupItem(choice2);
 				if (a != null) {			//Returns an array with the name, cost, price, and stock #
 					System.out.println("Please enter the new name of the item");
 					String choice3 = input.next();
-					changeInventory(choice2, choice3, -1, -1, -1);
+                    changeInventory(choice2, choice3, -1, -1, -1);
+					//Change the item with the new name
+					System.out.println();
 				}
 				
 				choose = false;
 			}
 			else if (choice.equals("2")) {
-				if (lookupItem(choice2) != null) {			//Returns an array with the name, cost, price, and stock #
+				if (a != null) {			//Returns an array with the name, cost, price, and stock #
 					System.out.println("Please enter the new cost");
 					Double choice3 = input.nextDouble();
 					changeInventory(choice2, null, -1, -1, choice3);
+					//Change the cost of the item
+					System.out.println();
 					
 				}
 				choose = false;
 			}
 			else if (choice.equals("3")) {
-				if (lookupItem(choice2) != null) {			//Returns an array with the name, cost, price, and stock #
+				if (a != null) {			//Returns an array with the name, cost, price, and stock #
 					System.out.println("Please enter the new sale price");
 					Double choice3 = input.nextDouble();
 					changeInventory(choice2, null, -1, choice3, -1);
+					System.out.println();
 				}
 				choose = false;
 			}
 			else if (choice.equals("4")) {
-				if (lookupItem(choice2) != null) {			//Returns an array with the name, cost, price, and stock #
+				if (a != null) {			//Returns an array with the name, cost, price, and stock #
 					System.out.println("Please enter the new inventory quantity");
 					int choice3 = input.nextInt();
 					changeInventory(choice2, null, choice3, -1, -1);
-					
+					//Change the quantity
+					System.out.println();
 				}
 				choose = false;
 			}
-			else if (choice.equals("5")) {
+			else if (choice.equals("5")) {		//Exit
 				choose = false;
 			}
 			else System.out.println("Please enter a valid number from 1 to 5.");
@@ -425,25 +433,43 @@ public class VendingMachine {
 			System.out.printf("%30s%30s%30s%30s\n",s.getID(),Double.toString(s.getCost()),Double.toString(s.getPrice()),Integer.toString(s.getInventory()));
 	}
 	
+	private void writeInventory() {
+		try {
+			FileWriter write = new FileWriter("inventory.txt");
+			write.write("Drinks");
+			for (Snack s: snacks) {
+				
+			}
+				
+				write.write("Drinks");
+			write.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	/**
 	 * Driver for VendingMachine class. Creates a vending machine and goes through the necessary steps to run it.
 	 * @param args
 	 */
 	public static void main(String[] args) {
 		boolean terminate = false;
-		VendingMachine machine = new VendingMachine();		//Initialized + logon
+		VendingMachine machine = new VendingMachine();		//Initializer + login
 		machine.intro();
 		while (!terminate) {
 			String choice = machine.getChoice();
 			machine.createMenu();
-			if (choice.equals("exit")||choice.equals("3")) terminate=true;
-			else if (choice.equals("1") || choice.equals("view")) {
+			if (choice.equals("exit")||choice.equals("4")) terminate=true;
+			else if (choice.equals("view") || choice.equals("1")) {
 				machine.printMenu();
 			}
 			else if (choice.equals("modify") || choice.equals("2")) {
 				machine.printMenu();
 				machine.modifyInventory();
-				
+			}
+			else if (choice.equals("buy") || choice.equals("3")) {
+				machine.printMenu();
+				machine.modifyInventory();
 			}
 		}
 	}
