@@ -2,8 +2,8 @@ import java.util.InputMismatchException;
 
 import java.util.Scanner;
 
-import net.codejava.crypto.CryptoException;
-import net.codejava.crypto.CryptoUtils;
+import crypto.CryptoException;
+import crypto.CryptoUtils;
 
 import java.io.FileWriter;
 import java.io.PrintWriter;
@@ -307,6 +307,9 @@ public class VendingMachine {
 		return matches;
 	}
 	
+	/**
+	 * User interface for changing inventory, the actual changes are made in changeInventory().
+	 */
 	private void modifyInventory() {
 		System.out.println("What would you like to change? You may:\n1) Update Product Name\n2) Update Product Quantity\n3) Update Product Cost\n4) Update Product Sale Price\n5) Go back");
 		String choice = input.next();
@@ -416,6 +419,8 @@ public class VendingMachine {
 			s.setCost(cost);
 			System.out.printf("%30s%30s%30s%30s\n",s.getID(),Double.toString(s.getCost()),Double.toString(s.getPrice()),Integer.toString(s.getInventory()));
 		}
+		
+		rewriteInventory();
 			
 	}
 	
