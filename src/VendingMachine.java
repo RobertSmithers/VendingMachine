@@ -335,7 +335,7 @@ public class VendingMachine {
 			else if (choice.equals("2")) {
 				if (a != null) {			//Returns an array with the name, cost, price, and stock #
 					System.out.println("Please enter the new cost");
-					String choice3 = input.next();
+					Double choice3 = input.nextDouble();
 					//Change the cost of the item
 					System.out.println();
 					
@@ -381,15 +381,18 @@ public class VendingMachine {
 			System.out.printf("%30s%30s%30s%30s\n",s.getID(),Double.toString(s.getCost()),Double.toString(s.getPrice()),Integer.toString(s.getInventory()));
 	}
 	
-	private void writeInventory() {
+	private void rewriteInventory() {
 		try {
 			FileWriter write = new FileWriter("inventory.txt");
-			write.write("Drinks");
-			for (Snack s: snacks) {
-				
+			write.write("Drinks\n");
+			for (Snack d: snacks) {
+				write.write(d.getID()+","+d.getCost()+","+Double.toString(d.getPrice())+","+Integer.toString(d.getInventory()));
 			}
 				
-				write.write("Drinks");
+			write.write("Snacks");
+			for (Snack s: snacks) {
+				write.write(s.getID()+","+s.getCost()+","+Double.toString(s.getPrice())+","+Integer.toString(s.getInventory()));
+			}
 			write.close();
 		} catch (IOException e) {
 			e.printStackTrace();
