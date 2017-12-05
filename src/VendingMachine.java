@@ -292,7 +292,6 @@ public class VendingMachine {
 			}
 			else if (choice.equals("2")) {
 				for (Snack s : drinks) {
-					System.out.printf("%1s%30s%30s%30s\n",s.getID(),Double.toString(s.getCost()),Double.toString(s.getPrice()),Integer.toString(s.getInventory()));
 					if (name.equals(s.getID())) {		//Add vals to the arrayList
 						matches.add(Double.toString(s.getCost()));
 						matches.add(Double.toString(s.getPrice()));
@@ -399,23 +398,25 @@ public class VendingMachine {
 				snacks.add(newSnack);
 			}
 			
-			System.out.printf("%30s%30s%30s%30s\n",newSnack.getID(),Double.toString(newSnack.getCost()),Double.toString(newSnack.getPrice()),Integer.toString(newSnack.getInventory()));
+			System.out.printf("%1s%30s%30s%30s\n",newSnack.getID(),Double.toString(newSnack.getCost()),Double.toString(newSnack.getPrice()),Integer.toString(newSnack.getInventory()));
 		}
 		
 		if (inv != -1) {
 			s.setInventory(inv);
-			System.out.printf("%30s%30s%30s%30s\n",s.getID(),Double.toString(s.getCost()),Double.toString(s.getPrice()),Integer.toString(s.getInventory()));
+			System.out.printf("%1s%30s%30s%30s\n",s.getID(),Double.toString(s.getCost()),Double.toString(s.getPrice()),Integer.toString(s.getInventory()));
 		}
 		
 		if (price != -1) {
 			s.setPrice(price);
-			System.out.printf("%30s%30s%30s%30s\n",s.getID(),Double.toString(s.getCost()),Double.toString(s.getPrice()),Integer.toString(s.getInventory()));
+			System.out.printf("%1s%30s%30s%30s\n",s.getID(),Double.toString(s.getCost()),Double.toString(s.getPrice()),Integer.toString(s.getInventory()));
 		}
 		
 		if (cost != -1) {
 			s.setCost(cost);
-			System.out.printf("%30s%30s%30s%30s\n",s.getID(),Double.toString(s.getCost()),Double.toString(s.getPrice()),Integer.toString(s.getInventory()));
+			System.out.printf("%1s%30s%30s%30s\n",s.getID(),Double.toString(s.getCost()),Double.toString(s.getPrice()),Integer.toString(s.getInventory()));
 		}
+		
+		rewriteInventory();
 			
 	}
 	
@@ -437,13 +438,13 @@ public class VendingMachine {
 		try {
 			FileWriter write = new FileWriter("inventory.txt");
 			write.write("Drinks\n");
-			for (Snack d: snacks) {
-				write.write(d.getID()+","+d.getCost()+","+Double.toString(d.getPrice())+","+Integer.toString(d.getInventory()));
+			for (Snack d: drinks) {
+				write.write(d.getID()+","+d.getCost()+","+Double.toString(d.getPrice())+","+Integer.toString(d.getInventory())+"\n");
 			}
 				
-			write.write("Snacks");
+			write.write("Snacks\n");
 			for (Snack s: snacks) {
-				write.write(s.getID()+","+s.getCost()+","+Double.toString(s.getPrice())+","+Integer.toString(s.getInventory()));
+				write.write(s.getID()+","+s.getCost()+","+Double.toString(s.getPrice())+","+Integer.toString(s.getInventory())+"\n");
 			}
 			write.close();
 		} catch (IOException e) {
