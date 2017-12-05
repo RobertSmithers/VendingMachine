@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * @author Robert Smithers and Devin Roychowdhury
+ * @author Robert Smithers and Deven Roychowdhury
  * @date 11/16/17
  * @description Creates a detailed collection of information and statistics on a vending
  * machine using the snacks built into the code and the purchases
@@ -326,6 +326,7 @@ public class VendingMachine {
 				if (a != null) {			//Returns an array with the name, cost, price, and stock #
 					System.out.println("Please enter the new name of the item");
 					String choice3 = input.next();
+                    changeInventory(choice2, choice3, -1, -1, -1);
 					//Change the item with the new name
 					System.out.println();
 				}
@@ -336,6 +337,7 @@ public class VendingMachine {
 				if (a != null) {			//Returns an array with the name, cost, price, and stock #
 					System.out.println("Please enter the new cost");
 					Double choice3 = input.nextDouble();
+					changeInventory(choice2, null, -1, -1, choice3);
 					//Change the cost of the item
 					System.out.println();
 					
@@ -345,8 +347,8 @@ public class VendingMachine {
 			else if (choice.equals("3")) {
 				if (a != null) {			//Returns an array with the name, cost, price, and stock #
 					System.out.println("Please enter the new sale price");
-					String choice3 = input.next();
-					//Change the sale price of the item
+					Double choice3 = input.nextDouble();
+					changeInventory(choice2, null, -1, choice3, -1);
 					System.out.println();
 				}
 				choose = false;
@@ -354,7 +356,8 @@ public class VendingMachine {
 			else if (choice.equals("4")) {
 				if (a != null) {			//Returns an array with the name, cost, price, and stock #
 					System.out.println("Please enter the new inventory quantity");
-					String choice3 = input.next();
+					int choice3 = input.nextInt();
+					changeInventory(choice2, null, choice3, -1, -1);
 					//Change the quantity
 					System.out.println();
 				}
@@ -365,6 +368,55 @@ public class VendingMachine {
 			}
 			else System.out.println("Please enter a valid number from 1 to 5.");
 		}
+	}
+	
+	/**
+	 * Changes the inventory for the given snack and if a parameter is -1 or null then it will keep it the same.
+	 */
+	private void changeInventory(String originalName, String newName, int inv, double price, double cost) {
+		Snack s = new Snack(-1, -1, -1, "");
+		boolean isSnack = false; 
+		
+		for (Snack snack : snacks) //Checks if the item is a snack
+			if (snack.getID().equals(originalName)) {
+				s = snack;
+				isSnack = true;
+			}
+		
+		for (Snack snack : drinks)//Checks if the item is a drink
+			if (snack.getID().equals(originalName))
+				s = snack;
+		
+		if (newName != null) { // Changes name
+			Snack newSnack = new Snack(s.getInventory(), s.getPrice(), s.getCost(), newName);
+			
+			if (isSnack) {
+				snacks.remove(s);
+				snacks.add(newSnack);
+			}
+			else {
+				drinks.remove(s);
+				snacks.add(newSnack);
+			}
+			
+			System.out.printf("%30s%30s%30s%30s\n",newSnack.getID(),Double.toString(newSnack.getCost()),Double.toString(newSnack.getPrice()),Integer.toString(newSnack.getInventory()));
+		}
+		
+		if (inv != -1) {
+			s.setInventory(inv);
+			System.out.printf("%30s%30s%30s%30s\n",s.getID(),Double.toString(s.getCost()),Double.toString(s.getPrice()),Integer.toString(s.getInventory()));
+		}
+		
+		if (price != -1) {
+			s.setPrice(price);
+			System.out.printf("%30s%30s%30s%30s\n",s.getID(),Double.toString(s.getCost()),Double.toString(s.getPrice()),Integer.toString(s.getInventory()));
+		}
+		
+		if (cost != -1) {
+			s.setCost(cost);
+			System.out.printf("%30s%30s%30s%30s\n",s.getID(),Double.toString(s.getCost()),Double.toString(s.getPrice()),Integer.toString(s.getInventory()));
+		}
+			
 	}
 	
 	/**
