@@ -6,7 +6,7 @@
  * @author Deven R. & Robert Smithers
  * @version 11/17/17
  */
-public class Snack
+public class Snack implements Comparable<Snack>
 {
     private int inventory;
     private double price;
@@ -25,6 +25,13 @@ public class Snack
         popularity = 0;
     }
 
+    public int compareTo(Snack snack) {
+    	  if(this.ID != null && snack.ID != null){
+    	   return this.ID.compareToIgnoreCase(snack.ID);
+    	  }
+    	  return 0;
+    	 }
+    
     /**
      * Allows user to change the inventory. (Mutator Method)
      */
