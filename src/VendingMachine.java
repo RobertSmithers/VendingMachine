@@ -162,17 +162,48 @@ public class VendingMachine {
 		Snack sn = new Snack(Integer.parseInt(params[3]), Double.parseDouble(params[2]), Double.parseDouble(params[1]), params[0]);
 		return sn;
 	}
+	
+	/**
+	 * Used at beginning of program to determine if the person interacting with the program is a customer or a administrator.
+	 * @return true if the user is a manager and false if the user is a customer.
+	 */
+	public boolean intro() {
+		System.out.println("Welcome to our Vending Machine program\nVersion number 1.0\n");
+		
+		String decision = "";
+		
+		while (!decision.equals("1") || !decision.equals("2") || !decision.toLowerCase().equals("user") || !decision.toLowerCase().equals("manager")) {
+			System.out.println("Are you a customer or a manager?");
+			decision = input.next();
+			if (decision.equals("1") || decision.toLowerCase().equals("customer")) {
+				customerIntro();
+				return false;
+			}
+			else if (decision.equals("2") || decision.toLowerCase().equals("manager")) {
+				managerIntro();
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Intro for a customer to interact with.
+	 */
+	public void customerIntro() {
+		
+	}
 
 	/**
 	 * Gives the user a UI and handles all account creation and login attempts
 	 * @return whether or not the program should continue based on the validity/permissions of the account entered
 	 */
-	public boolean intro()
+	public boolean managerIntro()
 	{
 		String decision= "login";
 		String username = " ";
 		String password = " ";
-		System.out.println("Welcome to our Vending Machine program\nVersion number 1.0");
+		
 		while (!decision.toLowerCase().equals("exit") && !decision.toLowerCase().equals("create") && !isValidAccount(username, password))
 		{
 			if (decision.toLowerCase().equals("login")) {
@@ -462,22 +493,37 @@ public class VendingMachine {
 	public static void main(String[] args) {
 		boolean terminate = false;
 		VendingMachine machine = new VendingMachine();		//Initializer + login
-		machine.intro();
-		while (!terminate) {
+		if (machine.intro()) {
+			while (!terminate) {
+				String choice = machine.getChoice();
+				machine.createMenu();
+				if (choice.equals("exit")||choice.equals("4")) terminate=true;
+				else if (choice.equals("view") || choice.equals("1")) {
+					machine.printMenu();
+				}
+				else if (choice.equals("modify") || choice.equals("2")) {
+					machine.printMenu();
+					machine.modifyInventory();
+				}
+				else if (choice.equals("buy") || choice.equals("3")) {
+					machine.printMenu();
+					machine.modifyInventory();
+				}
+			}
+		}
+		
+		else {
 			String choice = machine.getChoice();
 			machine.createMenu();
-			if (choice.equals("exit")||choice.equals("4")) terminate=true;
-			else if (choice.equals("view") || choice.equals("1")) {
-				machine.printMenu();
+			System.out.println("What product would you like to buy?");
+			try {
+				machine.wait(10000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			else if (choice.equals("modify") || choice.equals("2")) {
-				machine.printMenu();
-				machine.modifyInventory();
-			}
-			else if (choice.equals("buy") || choice.equals("3")) {
-				machine.printMenu();
-				machine.modifyInventory();
-			}
+			machine.printMenu();
+			
 		}
 	}
 }
