@@ -1,9 +1,10 @@
 import java.util.InputMismatchException;
-
+import java.util.List;
 import java.util.Scanner;
+import java.util.Collections;
+import java.util.Enumeration;
 
-import crypto.CryptoException;
-import crypto.CryptoUtils;
+import net.codejava.crypto.*;
 
 import java.io.FileWriter;
 import java.io.PrintWriter;
@@ -15,6 +16,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * @author Robert Smithers and Deven Roychowdhury
@@ -66,6 +68,11 @@ public class VendingMachine {
 			e.printStackTrace();
 		}
 		
+	}
+	
+	public void buyItem() {
+		System.out.println("What would you like to buy");
+		String choice4 = input.next();
 	}
 
 	/**
@@ -341,7 +348,7 @@ public class VendingMachine {
 	 * User interface for changing inventory, the actual changes are made in changeInventory().
 	 */
 	private void modifyInventory() {
-		System.out.println("What would you like to change? You may:\n1) Update Product Name\n2) Update Product Quantity\n3) Update Product Cost\n4) Update Product Sale Price\n5) Go back");
+		System.out.println("What would you like to change? You may:\n1) Update Product Name\n2) Update Product Cost\n3) Update Product Sale Price\n4) Update Product Quantity\n5) Go back");
 		String choice = input.next();
 		String choice2 = "5";
 		boolean choose = true;
@@ -369,30 +376,36 @@ public class VendingMachine {
 			else if (choice.equals("2")) {
 				if (a != null) {			//Returns an array with the name, cost, price, and stock #
 					System.out.println("Please enter the new cost");
-					Double choice3 = input.nextDouble();
-					changeInventory(choice2, null, -1, -1, choice3);
-					//Change the cost of the item
-					System.out.println();
-					
+					try {
+						Double choice3 = input.nextDouble();
+						changeInventory(choice2, null, -1, -1, choice3);
+					} catch (InputMismatchException e) {
+						System.out.println("We were looking for a number... any number... you disappoint us.");
+					}
 				}
 				choose = false;
 			}
 			else if (choice.equals("3")) {
 				if (a != null) {			//Returns an array with the name, cost, price, and stock #
 					System.out.println("Please enter the new sale price");
-					Double choice3 = input.nextDouble();
-					changeInventory(choice2, null, -1, choice3, -1);
-					System.out.println();
+					try {
+						Double choice3 = input.nextDouble();
+						changeInventory(choice2, null, -1, choice3, -1);
+					} catch (InputMismatchException e) {
+						System.out.println("We were looking for a number... any number... you disappoint us.");
+					}
 				}
 				choose = false;
 			}
 			else if (choice.equals("4")) {
 				if (a != null) {			//Returns an array with the name, cost, price, and stock #
 					System.out.println("Please enter the new inventory quantity");
-					int choice3 = input.nextInt();
-					changeInventory(choice2, null, choice3, -1, -1);
-					//Change the quantity
-					System.out.println();
+					try {
+						int choice3 = input.nextInt();
+						changeInventory(choice2, null, choice3, -1, -1);
+					} catch (InputMismatchException e) {
+						System.out.println("We were looking for an integer number... you disappoint us.");
+					}
 				}
 				choose = false;
 			}
@@ -471,12 +484,15 @@ public class VendingMachine {
 	private void rewriteInventory() {
 		try {
 			FileWriter write = new FileWriter("inventory.txt");
+			System.out.println("Overwrite");
 			write.write("Drinks\n");
+			Collections.sort(drinks);
 			for (Snack d: drinks) {
 				write.write(d.getID()+","+d.getCost()+","+Double.toString(d.getPrice())+","+Integer.toString(d.getInventory())+"\n");
 			}
 				
 			write.write("Snacks\n");
+			Collections.sort(snacks);
 			for (Snack s: snacks) {
 				write.write(s.getID()+","+s.getCost()+","+Double.toString(s.getPrice())+","+Integer.toString(s.getInventory())+"\n");
 			}
@@ -513,14 +529,19 @@ public class VendingMachine {
 		}
 		
 		else {
-			String choice = machine.getChoice();
+			getCustomerChoice();
 			machine.createMenu();
 			System.out.println("What product would you like to buy?");
-			try {
-				machine.wait(10000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			if (choice.equals("exit")||choice.equals("4")) terminate=true;
+			else if (choice.equals("view") || choice.equals("1")) {
+				machine.printMenu();
+			}
+			else if (choice.equals("modify") || choice.equals("2")) {
+				machine.printMenu();
+				machine.modifyInventory();
+			}
+			else if (choice.equals("buy") || choice.equals("3")) {
+				machine.printMenu();
 			}
 			machine.printMenu();
 			
