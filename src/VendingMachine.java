@@ -313,18 +313,23 @@ public class VendingMachine {
 	private ArrayList<String> lookupItem(String name) {
 		ArrayList<String> matches = new ArrayList<String>();
 		boolean searching = true;
+		String choice;
 		while (searching) {
 			System.out.println("Select the correct category:\n1) Snack\n2) Drink\n3) Go back");
-			String choice = input.next();
+			choice = input.nextLine();
 			if (choice.equals("1")) {
 				for (Snack s : snacks) {
-		
+					//System.out.println(snacks.indexOf(s) + " Name: "+s.getID());
 					if (name.equals(s.getID())) {		//Add vals to the arrayList
 						matches.add(Double.toString(s.getCost()));
 						matches.add(Double.toString(s.getPrice()));
 						matches.add(Integer.toString(s.getInventory()));
 						System.out.printf("%1s%30s%30s%30s\n",s.getID(),Double.toString(s.getCost()),Double.toString(s.getPrice()),Integer.toString(s.getInventory()));
-						searching=false;
+						searching = false;
+					}
+					else if (snacks.indexOf(s) == snacks.size()-1 && searching) {
+						System.out.println("Hmm, no matches were found for the snack "+name+".");
+						searching = false;
 					}
 				}
 			}
@@ -335,6 +340,10 @@ public class VendingMachine {
 						matches.add(Double.toString(s.getPrice()));
 						matches.add(Integer.toString(s.getInventory()));
 						searching=false;
+					}
+					else if (drinks.indexOf(s) == drinks.size()-1) {
+						System.out.println("Hmm, no matches were found for the drink "+name+".");
+						searching = false;
 					}
 				}
 			}
@@ -357,20 +366,20 @@ public class VendingMachine {
 			
 			if (choice.equals("1") || choice.equals("2") || choice.equals("3")) {
 				System.out.println("Which item would you like to change (enter exact name and spelling of item)");
-				choice2 = input.next();
+				choice2 = input.nextLine();
+				System.out.print(choice2);
+				choice2 = input.nextLine();
 				 a = lookupItem(choice2);
-				
 			}
 			if (choice.equals("1")) {
 				//Look up item in chart
 				if (a != null) {			//Returns an array with the name, cost, price, and stock #
 					System.out.println("Please enter the new name of the item");
-					String choice3 = input.next();
+					String choice3 = input.nextLine();
                     changeInventory(choice2, choice3, -1, -1, -1);
 					//Change the item with the new name
-					System.out.println();
+                    System.out.println("Successfully updated "+choice2+" to "+choice3);
 				}
-				
 				choose = false;
 			}
 			else if (choice.equals("2")) {
@@ -473,6 +482,7 @@ public class VendingMachine {
 	public void printMenu() {
 		System.out.println("Drinks:");
 		System.out.printf("%30s%30s%30s%30s\n","Name:","Cost:","Price:","Inventory:","");
+		System.out.println("Snacks size = "+snacks.size()+"\nDrinks size = "+drinks.size());
 		for (Snack s : drinks)
 			System.out.printf("%30s%30s%30s%30s\n",s.getID(),Double.toString(s.getCost()),Double.toString(s.getPrice()),Integer.toString(s.getInventory()));
 		System.out.println("Snacks:");
@@ -482,9 +492,10 @@ public class VendingMachine {
 	}
 	
 	private void rewriteInventory() {
+		System.out.println("Rewriting the inventory. Drinks = "+drinks.size()+" Snacks = "+snacks.size());
+		
 		try {
 			FileWriter write = new FileWriter("inventory.txt");
-			System.out.println("Overwrite");
 			write.write("Drinks\n");
 			Collections.sort(drinks);
 			for (Snack d: drinks) {
@@ -529,7 +540,7 @@ public class VendingMachine {
 		}
 		
 		else {
-			getCustomerChoice();
+			String choice = "";//getCustomerChoice();
 			machine.createMenu();
 			System.out.println("What product would you like to buy?");
 			if (choice.equals("exit")||choice.equals("4")) terminate=true;
@@ -543,7 +554,7 @@ public class VendingMachine {
 			else if (choice.equals("buy") || choice.equals("3")) {
 				machine.printMenu();
 			}
-			machine.printMenu();
+			//machine.printMenu();
 			
 		}
 	}
