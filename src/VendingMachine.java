@@ -2,8 +2,7 @@ import java.util.InputMismatchException;
 
 import java.util.Scanner;
 
-import crypto.CryptoException;
-import crypto.CryptoUtils;
+import net.codejava.crypto.*;
 
 import java.io.FileWriter;
 import java.io.PrintWriter;
